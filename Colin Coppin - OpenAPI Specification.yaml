@@ -1,0 +1,132 @@
+#referred to 'Basic structure of an OpenAPI spec' resource for assistance
+#coded in Swagger Editor
+
+openapi: 3.0.0
+info:
+  title: Movie Theater API
+  description: API allows for interaction between Dapper Theaters website and server to get current seating for a movie.
+  version: 1.0.0
+
+
+servers:
+  - url: http://api.dappertheaters.com:8433/v1
+    description: Server for Dapper Theaters, holding the movies currently being shown, including their showtimes and seatings.
+
+paths:
+  /movies:
+    post:
+      summary: "Create a new movie on the server"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                length:
+                  type: string
+                rating:
+                  type: integer
+      responses:
+        "201":
+          description: Movie created
+          
+        "400":
+          description: Movie creation unsuccessful
+          
+  /movies/{id}:
+      
+    delete:
+      summary: "Delete a movie by id"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: Movie deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  length:
+                    type: string
+                  rating:
+                    type: integer
+        "404":
+          description: Movie not found
+          
+        "401":
+          description: Missing or invalid credentials
+        
+  
+  /movies/{id}/seats/{seatNum}:
+    get:
+      summary: "Get a movie's current seating by id"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+        - in: path
+          name: seatNum
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Get the seat's availability
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  seatNum:
+                    type: string
+                  isAvailable:
+                    type: boolean
+        "404":
+          description: Movie seating not found.
+    
+    
+    put:
+      summary: "Update a movie's seating availability"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+        - in: path
+          name: seatNum
+          schema:
+            type: string
+          required: true
+          
+      requestBody: 
+        required: true
+        description: Movie's seating to update
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                seatNum:
+                  type: string
+                isAvailable:
+                  type: boolean
+      
+      responses:
+        "200":
+          description: Update successful
+
+        "404":
+          description: Movie seating not found
